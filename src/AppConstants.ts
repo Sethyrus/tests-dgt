@@ -10,6 +10,7 @@ const FontSizes = {
 const Colors = {
   // Propios
   Verde: '#2A9C54',
+  Naranja: '#FFAA00',
   // Adicionales
   Azul: '#6AD4FF',
   Rojo: '#DC0100',

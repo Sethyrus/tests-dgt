@@ -1,7 +1,7 @@
 import { RouteProp } from '@react-navigation/native'
-import { StackNavigationProp } from '@react-navigation/stack'
+import { StackNavigationOptions, StackNavigationProp } from '@react-navigation/stack'
 import React, { Component, Fragment, useRef } from 'react'
-import { Dimensions, StatusBar, StyleSheet, Image as ImageRN, View } from 'react-native'
+import { Dimensions, StatusBar, StyleSheet, Image as ImageRN, View, Alert } from 'react-native'
 import Swiper from 'react-native-swiper'
 import { Colors, FontSizes, HeaderHeight } from '../AppConstants'
 import Container from '../components/Container'
@@ -40,6 +40,9 @@ const styles = StyleSheet.create({
     margin: 12,
     overflow: 'hidden',
   },
+  DisabledButtonStyle: {
+    backgroundColor: Colors.gray,
+  },
   ButtonStyle: {
     padding: 0,
     width: 48,
@@ -54,8 +57,6 @@ const styles = StyleSheet.create({
 
 export class TestScreen extends Component<Props, State> {
 
-  swiperRef: any = React.createRef();
-
   constructor(props) {
     super(props);
 
@@ -65,101 +66,124 @@ export class TestScreen extends Component<Props, State> {
     }
   }
 
+  get qs() {
+    return this.props.route.params.test.qs[this.state.testIndex];
+  }
+
+  componentDidMount = () => {
+    const options: Partial<StackNavigationOptions> = {};
+
+    if (this.props.route.params.test.name) {
+      options.title = this.props.route.params.test.name
+    }
+
+    this.props.navigation.setOptions(options)
+  }
+
   checkOption(i, v) {
     let answers = [...this.state.answers];
     answers[i] = v;
     this.setState({ answers })
   }
 
+  testReady = () => {
+    if (this.state.answers.length === this.props.route.params.test.qs.length) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  correct = () => {
+    if (!this.testReady()) {
+      Alert.alert('Error', 'No has respondido todas las preguntas',
+        [
+          { text: 'Aceptar' },
+        ], { cancelable: true }
+      );
+    }
+
+
+  }
+
   render() {
     return (
       <ScreenContainer contentContainerStyle={styles.ContentContainerStyle}>
         <ScrollView>
-          <Container>
-            <Text h2 center>{this.props.route.params.test.name}</Text>
+          <Container style={{ paddingBottom: 16 }}>
+            <Text h2 center>Pregunta {this.state.testIndex + 1} de {this.props.route.params.test.qs.length}</Text>
           </Container>
 
-          <Swiper ref={this.swiperRef} index={this.state.testIndex} onIndexChanged={i => this.setState({ testIndex: i })} showsButtons={false} showsPagination={false} scrollEnabled={false} loop={false} containerStyle={styles.Slider}>
-            {
-              this.props.route.params.test.qs.map((qs, i) => (
-                <Fragment key={i}>
-                  {
-                    qs.image &&
-                    <Container style={{ paddingHorizontal: 0 }}>
-                      <Image
-                        resizeMode="contain"
-                        imageBackgroundColor="transparent"
-                        style={{
-                          width: Dimensions.get('screen').width,
-                          height: 250,
-                        }}
-                        source={{
-                          uri: qs.image,
-                        }}
-                      />
-                    </Container>
-                  }
+          {
+            this.qs.image &&
+            <Container fluid style={{ paddingBottom: 16 }}>
+              <Image
+                resizeMode="contain"
+                imageBackgroundColor="transparent"
+                style={{
+                  width: Dimensions.get('screen').width,
+                  height: 250,
+                }}
+                source={{
+                  uri: this.qs.image,
+                }}
+              />
+            </Container>
+          }
 
-                  <Container>
-                    <Text mb10>
-                      {qs.title}
-                    </Text>
+          <Container style={{ padding: 16, paddingTop: 0 }}>
+            <Text mb10 center bold>
+              {this.qs.title}
+            </Text>
 
-                    <Container fluid>
-                      {
-                        qs.a &&
-                        <CustomCheckbox title={qs.a} onPress={() => this.checkOption(i, 'a')} checked={this.state.answers[i] === 'a'} />
-                      }
-                      {
-                        qs.b &&
-                        <CustomCheckbox title={qs.b} onPress={() => this.checkOption(i, 'b')} checked={this.state.answers[i] === 'b'} />
-                      }
-                      {
-                        qs.c &&
-                        <CustomCheckbox title={qs.c} onPress={() => this.checkOption(i, 'c')} checked={this.state.answers[i] === 'c'} />
-                      }
-                    </Container>
-                  </Container>
-                </Fragment>
-              ))
-            }
-          </Swiper>
+            <Container fluid>
+              {
+                this.qs.a &&
+                <CustomCheckbox selectedStyle={{ backgroundColor: Colors.Naranja + '88' }} title={this.qs.a} onPress={() => this.checkOption(this.state.testIndex, 'a')} checked={this.state.answers[this.state.testIndex] === 'a'} />
+              }
+              {
+                this.qs.b &&
+                <CustomCheckbox selectedStyle={{ backgroundColor: Colors.Naranja + '88' }} title={this.qs.b} onPress={() => this.checkOption(this.state.testIndex, 'b')} checked={this.state.answers[this.state.testIndex] === 'b'} />
+              }
+              {
+                this.qs.c &&
+                <CustomCheckbox selectedStyle={{ backgroundColor: Colors.Naranja + '88' }} title={this.qs.c} onPress={() => this.checkOption(this.state.testIndex, 'c')} checked={this.state.answers[this.state.testIndex] === 'c'} />
+              }
+            </Container>
+          </Container>
         </ScrollView>
 
-        <Container fluid horizontal style={{ justifyContent: 'space-between' }}>
-          {
-            this.state.testIndex !== 0 &&
-            <Button containerStyle={styles.ButtonContainerStyle} style={styles.ButtonStyle} icon={
-              <Icon
-                name='chevron-left'
-                color='#ffffff'
-                size={26}
-                style={{
-                  height: 48,
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}
-              />
-            } onPress={() => this.swiperRef.current.scrollBy(-1, true)} />
-          }
+        {/* TODO: Al corregir, sustituir este bloque por el acceso rápido a las preguntas */}
+        <Container fluid horizontal style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <Button containerStyle={{ ...styles.ButtonContainerStyle, ...this.state.testIndex === 0 ? styles.DisabledButtonStyle : null }} style={styles.ButtonStyle} icon={
+            <Icon
+              name='chevron-left'
+              color='#ffffff'
+              size={26}
+              style={{
+                height: 48,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            />
+          } onPress={() => this.state.testIndex === 0 ? null : this.setState({ testIndex: this.state.testIndex - 1 })} />
 
-          <View>{/* Spacer */}</View>
+          <View>
+            <Button containerStyle={{ backgroundColor: Colors.Verde, ...this.testReady() ? null : styles.DisabledButtonStyle }} style={{ paddingHorizontal: 16, paddingVertical: 8 }} title='Corregir' onPress={() => this.correct()} />
+          </View>
 
-          {
-            this.state.testIndex < this.props.route.params.test.qs.length &&
-            <Button containerStyle={styles.ButtonContainerStyle} style={styles.ButtonStyle} icon={
-              <Icon
-                name='chevron-right'
-                color='#ffffff'
-                size={26}
-                style={{
-                  height: 48,
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}
-              />
-            } onPress={() => this.swiperRef.current.scrollBy(1, true)} />
-          }
+          <Button containerStyle={{ ...styles.ButtonContainerStyle, ...this.state.testIndex === this.props.route.params.test.qs.length ? styles.DisabledButtonStyle : null }} style={styles.ButtonStyle} icon={
+            <Icon
+              name='chevron-right'
+              color='#ffffff'
+              size={26}
+              style={{
+                height: 48,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            />
+          } onPress={() => this.state.testIndex === this.props.route.params.test.qs.length ? null : this.setState({ testIndex: this.state.testIndex + 1 })} />
         </Container>
       </ScreenContainer>
     )

@@ -3,13 +3,13 @@
 -o DrawerNavigator con opciones de login/registro, configuración de la cuenta, preguntas guardadas y estadísticas
 -o Pantalla de Inicio con acceso a la lista de exámenes y demás opciones de examen
 
-[ ] Añadir ayuda en las preguntas (tips que expliquen el motivo de la solución)
-
 [ ] Añadir estadísticas
 -o Guardar resultados de los tests por bloques (cada reinicio de los tests sería un 
 nuevo bloque) para comparar los resultados temporalmente
 -o Porcentaje de exámenes aprobados
 -o Porcentaje de preguntas correctas
+
+[ ] Añadir ayuda en las preguntas (tips que expliquen el motivo de la solución)
 
 [ ] Añadir modo de práctica (al contestar una pregunta se muestra automáticamente la solución)
 

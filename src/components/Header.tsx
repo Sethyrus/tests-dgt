@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 7,
     left: 12,
+    overflow: 'hidden',
   },
   RightButton: {
     height: 42,
@@ -45,6 +46,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 7,
     right: 12,
+    overflow: 'hidden',
   }
 })
 
