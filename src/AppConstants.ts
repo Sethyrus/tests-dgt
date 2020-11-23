@@ -8,10 +8,8 @@ const FontSizes = {
 }
 
 const Colors = {
-  // Propios
   Verde: '#2A9C54',
   Naranja: '#FFAA00',
-  // Adicionales
   Azul: '#6AD4FF',
   Rojo: '#DC0100',
   primaryDark: '#004480', // 25% light
@@ -34,9 +32,10 @@ const Colors = {
 
 const HeaderHeight = 56;
 
-const ActionConstants = {
-
+const Actions = {
+  GET_ANSWERS: 'GET_ANSWERS',
+  ADD_ANSWER: 'ADD_ANSWER',
 }
 
-export { FontSizes, Colors, HeaderHeight, ActionConstants };
+export { FontSizes, Colors, HeaderHeight, Actions };
 

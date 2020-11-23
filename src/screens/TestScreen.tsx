@@ -1,23 +1,24 @@
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationOptions, StackNavigationProp } from '@react-navigation/stack'
-import React, { Component, Fragment, useRef } from 'react'
-import { Dimensions, StatusBar, StyleSheet, Image as ImageRN, View, Alert } from 'react-native'
-import Swiper from 'react-native-swiper'
+import React, { Component } from 'react'
+import { Dimensions, StatusBar, StyleSheet, View, Alert, BackHandler } from 'react-native'
 import { Colors, FontSizes, HeaderHeight } from '../AppConstants'
 import Container from '../components/Container'
 import ScreenContainer from '../components/ScreenContainer'
 import Text from '../components/Text'
 import { RootStackParamList } from '../Navigator'
 import Image from 'react-native-image-modal';
-import Separator from '../components/Separator'
 import CustomCheckbox from '../components/CustomCheckbox'
 import Button from '../components/Button'
 import { ScrollView } from 'react-native-gesture-handler'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { connect } from 'react-redux'
+import { addAnswer } from '../redux/actions/answersActions';
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList, 'Test'>;
   route: RouteProp<RootStackParamList, 'Test'>;
+  addAnswer: Function;
 }
 
 interface State {
@@ -55,12 +56,15 @@ const styles = StyleSheet.create({
   },
 })
 
-export class TestScreen extends Component<Props, State> {
+export class _TestScreen extends Component<Props, State> {
+
+  public backHandler: any = null;
 
   constructor(props) {
     super(props);
 
     this.state = {
+      // corrected: true,
       testIndex: 0,
       answers: [],
     }
@@ -71,13 +75,37 @@ export class TestScreen extends Component<Props, State> {
   }
 
   componentDidMount = () => {
-    const options: Partial<StackNavigationOptions> = {};
+    const options: Partial<StackNavigationOptions> | any = {};
 
     if (this.props.route.params.test.name) {
       options.title = this.props.route.params.test.name
     }
 
+    options.params = {
+      goBack: this.goBack.bind(this),
+    }
+
     this.props.navigation.setOptions(options)
+
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.goBack());
+  }
+
+  componentWillUnmount = () => {
+    this.backHandler.remove();
+  }
+
+  goBack = () => {
+    Alert.alert('Confirmar', '¿Quieres salir? Se perderá el progreso del test',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        { text: 'Aceptar', onPress: this.props.navigation.goBack },
+      ]);
+
+    // Necesario para evitar el cierre de la app
+    return true;
   }
 
   checkOption(i, v) {
@@ -101,9 +129,21 @@ export class TestScreen extends Component<Props, State> {
           { text: 'Aceptar' },
         ], { cancelable: true }
       );
+
+      return;
     }
 
+    let answer = {
+      id: this.props.route.params.test.id,
+      date: Date.now(),
+      answers: this.state.answers,
+    }
 
+    this.props.addAnswer(answer, () => {
+      this.props.navigation.replace('TestCorrection', {
+        test: this.props.route.params.test
+      })
+    })
   }
 
   render() {
@@ -153,7 +193,6 @@ export class TestScreen extends Component<Props, State> {
           </Container>
         </ScrollView>
 
-        {/* TODO: Al corregir, sustituir este bloque por el acceso rápido a las preguntas */}
         <Container fluid horizontal style={{ justifyContent: 'space-between', alignItems: 'center' }}>
           <Button containerStyle={{ ...styles.ButtonContainerStyle, ...this.state.testIndex === 0 ? styles.DisabledButtonStyle : null }} style={styles.ButtonStyle} icon={
             <Icon
@@ -169,7 +208,7 @@ export class TestScreen extends Component<Props, State> {
           } onPress={() => this.state.testIndex === 0 ? null : this.setState({ testIndex: this.state.testIndex - 1 })} />
 
           <View>
-            <Button containerStyle={{ backgroundColor: Colors.Verde, ...this.testReady() ? null : styles.DisabledButtonStyle }} style={{ paddingHorizontal: 16, paddingVertical: 8 }} title='Corregir' onPress={() => this.correct()} />
+            <Button containerStyle={{ backgroundColor: Colors.Verde, ...this.testReady() ? null : styles.DisabledButtonStyle }} style={{ paddingHorizontal: 20, paddingVertical: 8 }} title='Corregir' onPress={() => this.correct()} />
           </View>
 
           <Button containerStyle={{ ...styles.ButtonContainerStyle, ...this.state.testIndex === this.props.route.params.test.qs.length ? styles.DisabledButtonStyle : null }} style={styles.ButtonStyle} icon={
@@ -189,5 +228,7 @@ export class TestScreen extends Component<Props, State> {
     )
   }
 }
+
+const TestScreen = connect(null, { addAnswer })(_TestScreen)
 
 export default TestScreen

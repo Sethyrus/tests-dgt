@@ -50,12 +50,12 @@ const styles = StyleSheet.create({
   }
 })
 
-const Header = (props: StackHeaderProps) => (
+const Header = (props: StackHeaderProps | any) => (
   <View style={styles.OuterContainer}>
     {
       props.navigation.canGoBack() &&
       <Container fluid style={styles.LeftButton}>
-        <TouchableNativeFeedback containerStyle={styles.ButtonContainer} onPress={() => props.navigation.goBack()}>
+        <TouchableNativeFeedback containerStyle={styles.ButtonContainer} onPress={() => { console.log('props.scene', props.scene); props.scene.descriptor.options.params?.goBack ? props.scene.descriptor.options.params?.goBack() : props.navigation.goBack() }}>
           <Icon
             name='arrow-left'
             color='#ffffff'

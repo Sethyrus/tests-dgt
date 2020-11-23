@@ -6,6 +6,7 @@ import React from 'react';
 import Header from './components/Header';
 import TestsScreen from './screens/TestsScreen';
 import TestScreen from './screens/TestScreen';
+import TestCorrectionScreen from './screens/TestCorrectionScreen';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -22,7 +23,11 @@ export type RootStackParamList = {
   Tests: undefined;
   Test: {
     test: any,
+    goBack?: () => boolean,
   };
+  TestCorrection: {
+    test: any,
+  }
 };
 
 const MainStack = () => (
@@ -30,6 +35,7 @@ const MainStack = () => (
     <Stack.Screen options={{ title: 'Inicio' }} name="Home" component={HomeScreen} />
     <Stack.Screen options={{ title: 'Tests generales DGT' }} name="Tests" component={TestsScreen} />
     <Stack.Screen options={{ title: 'Test' }} name="Test" component={TestScreen} />
+    <Stack.Screen options={{ title: 'Corrección' }} name="TestCorrection" component={TestCorrectionScreen} />
   </Stack.Navigator>
 );
 
