@@ -66,7 +66,38 @@ export class _TestScreen extends Component<Props, State> {
     this.state = {
       // corrected: true,
       testIndex: 0,
-      answers: [],
+      answers: [
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+      ],
     }
   }
 
@@ -140,6 +171,7 @@ export class _TestScreen extends Component<Props, State> {
     }
 
     this.props.addAnswer(answer, () => {
+      console.log('The callback');
       this.props.navigation.replace('TestCorrection', {
         test: this.props.route.params.test
       })

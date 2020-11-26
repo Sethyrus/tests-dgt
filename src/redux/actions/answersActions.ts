@@ -12,12 +12,15 @@ export const getAnswers = () => async dispatch => {
     console.log('getAnswers asyncstorage ERROR', error);
   }
 
+  console.log('STORED ANSWERS', answers);
+
   dispatch({ type: Actions.GET_ANSWERS, payload: JSON.parse(answers) });
 };
 
 export const addAnswer = (answer, callback?) => async dispatch => {
 
   const answers: any = reduxStore.getState().answers;
+  console.log('answers PRE', answers);
   answers.push(answer)
 
   try {
@@ -27,6 +30,8 @@ export const addAnswer = (answer, callback?) => async dispatch => {
   }
 
   dispatch({ type: Actions.ADD_ANSWER, payload: answers });
+
+  console.log('Respuesta añadida', answers);
 
   if (typeof callback != 'function') {
     callback();

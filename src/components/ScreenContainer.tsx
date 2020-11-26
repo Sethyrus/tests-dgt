@@ -10,7 +10,7 @@ interface Props {
 
 const styles = StyleSheet.create({
   Container: {
-    backgroundColor: '#F9F9F9',
+    backgroundColor: '#F7F7F7',
     // backgroundColor: '#aaaaaa', //debug
     minHeight: '100%',
   },
